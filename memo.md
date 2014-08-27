@@ -3,53 +3,47 @@ docker
 
 参考資料：[http://www.slideshare.net/enakai/docker-34668707](http://www.slideshare.net/enakai/docker-34668707)
 
-1. Dockerとは
-- Docker incが開発している仮想化技術
-- VMより軽い
-- コンテナ技術を利用した仮想化
-− コンテナとは、
-　ユーザ実行プロセスを独立した空間(コンテナ)に分離する技術
-　カーネルは共有される
-　コンテナごとに、ファイルシステム、ネットワーク、ユーザ、プロセステーブルを隔離
-　コンテナごとに、CPU、メモリの割当量を制限
+* Dockerとは
+1. Docker incが開発している仮想化技術
+2. VMより軽い
+3. コンテナ技術を利用した仮想化
+4. コンテナとは、
+  * ユーザ実行プロセスを独立した空間(コンテナ)に分離する技術
+  * カーネルは共有される
+  * コンテナごとに、ファイルシステム、ネットワーク、ユーザ、プロセステーブルを隔離
+  * コンテナごとに、CPU、メモリの割当量を制限
 
-− 実体としては、コンテナという一つの技術があるわけではなく、ネットワークや
+5. 実体としては、コンテナという一つの技術があるわけではなく、ネットワークや
 　ファイルシステムを分離するためのOSの個々の技術を組み合わせたもの。
 　Dockerなどは、それらのOSの機能を組み合わせて使いやすくしたツール
-　例えば、ネットワークの分離は、Network namespace
-　ファイルシステムの分離は、
-　その他のコンテナ技術
-　　LXC(Linux Container)：Dockerが0.9まで採用していたコンテナ
-　　OpenVZ：RHEL用のコンテナ
-　　Warden：Cloud Foundaryが開発
-　　Zone：Solarisのコンテナ
+  * 例えば、ネットワークの分離は、Network namespace
+  * ファイルシステムの分離は、
+
 　
-- コンテナだと、
-　クリーンな環境がすぐにできる
-　差分なく環境が作れる
-　デプロイも簡単
+6. コンテナで仮想化すると、すぐにクリーンな環境がつくれる。デプロイもしやすい。
 
-
-2. コンテナ内でbashを実行
+*. コンテナ内でbashを実行してみる
 ※VMではなく、bashが独立した空間で実行されるだけ
+
 dockerは元となるOSのイメージをローカルにDLしてから実行する
-- イメージの取得
+** イメージの取得
 sudo docker pull ubuntu:latest
-- コンテナの起動
+** コンテナの起動
 sudo docker run -i -t ubuntu:latest /bin/bash
 -iは標準入力を受け付けるオプション
 -tは仮想端末を使用するオプション
 
-topとか
+** topとか実行してみる
 
-exitするとbashも終了する
-そのままにする場合はデタッチ
+** 終了とかデタッチとか
+*** exitするとbashも終了する
+*** そのままにする場合はデタッチ
 Ctrl-p Ctrl-q
-再度アタッチする場合は
+*** 再度アタッチする場合は
 sudo docker attach <CID>
 
 
-3. コンテナでPostgreSQLを実行
+* コンテナでPostgreSQLを実行
 参考資料：[http://docs.docker.com/examples/postgresql_service/](http://docs.docker.com/examples/postgresql_service/)
 
 元となるイメージがない場合、Dockerfileというものを作って、イメージを作成する。
@@ -106,8 +100,9 @@ VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 CMD ["/usr/lib/postgresql/9.3/bin/postgres", "-D", "/var/lib/postgresql/9.3/main", "-c", "config_file=/etc/postgresql/9.3/main/postgresql.conf"]
 ```
 
-vi Dockerfile
-sudo docker build -t eg_postgresql .
+```
+# vi Dockerfile
+# docker build -t eg_postgresql_2 .
 
 ...
 Removing intermediate container 9f30998297fc
@@ -117,20 +112,14 @@ Step 11 : CMD ["/usr/lib/postgresql/9.3/bin/postgres", "-D", "/var/lib/postgresq
 Removing intermediate container a1f1cb63014d
 Successfully built 09223d086e10
 
-- イメージを確認
-docker images
+# docker images
 
-- PostgreSQLの起動
-sudo docker run --rm -P --name pg_test eg_postgresql
+# PostgreSQLの起動
+# sudo docker run --rm -P --name pg_test eg_postgresql
 
-- 接続
-psql -h localhost -p 49153 -d docker -U docker --password
-
-接続してみる
+# 接続
+# psql -h localhost -p 49153 -d docker -U docker --password
 
 
-■ファイルシステムの話
-- ベースとなるイメージから起動されるが、ファイルはUnionFSにより
-　差分管理される
 
 
