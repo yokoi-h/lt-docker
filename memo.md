@@ -17,7 +17,7 @@ docker
 　ファイルシステムを分離するためのOSの個々の技術を組み合わせたもの。
 　Dockerなどは、それらのOSの機能を組み合わせて使いやすくしたツール
   * 例えば、ネットワークの分離は、Network namespace
-  * ファイルシステムの分離は、
+  * ファイルシステムの分離は、Mount namespace、、、らしい
 
 　
 6. コンテナで仮想化すると、すぐにクリーンな環境がつくれる。デプロイもしやすい。
@@ -29,22 +29,21 @@ dockerでは元となるOSのイメージをローカルにDLしてから実行�
 
 
 1. イメージの取得
-sudo docker pull ubuntu:latest
+`sudo docker pull ubuntu:latest`
 
 2.  コンテナの起動
-sudo docker run -i -t ubuntu:latest /bin/bash
--iは標準入力を受け付けるオプション
--tは仮想端末を使用するオプション
+`sudo docker run -i -t ubuntu:latest /bin/bash`
+  * -iは標準入力を受け付けるオプション
+  * -tは仮想端末を使用するオプション
 
 3. topとか実行してみる
 
 4. 終了とかデタッチとか
   * exitするとbashも終了する
   *そのままにする場合はデタッチ
-Ctrl-p Ctrl-q
+`Ctrl-p Ctrl-q`
   * 再度アタッチする場合は
-sudo docker attach <CID>
-
+`sudo docker attach <CID>`
 
 ### コンテナでPostgreSQLを実行
 参考資料：[http://docs.docker.com/examples/postgresql_service/](http://docs.docker.com/examples/postgresql_service/)
