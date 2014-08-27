@@ -115,7 +115,7 @@ Successfully built 09223d086e10
 # docker images
 
 # PostgreSQLの起動
-# sudo docker run --rm -P --name pg_test eg_postgresql
+# sudo docker run --rm -P --name pg_test_2 eg_postgresql_2
 
 # 接続
 # psql -h localhost -p 49153 -d docker -U docker --password
