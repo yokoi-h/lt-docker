@@ -114,41 +114,41 @@ gpg:               imported: 1  (RSA: 1)
   ```
 
   4. いったん停止(停止しても更新したファイルの内容は残っています)
-```shell
-postgres@03ff6b272a4f:~$ /etc/init.d/postgresql stop
-Stopping PostgreSQL 9.3 database server                                                                                         [ OK ]
-postgres@03ff6b272a4f:~$ exit
-logout
-root@03ff6b272a4f:~# exit
-logout
-Connection to 172.17.0.6 closed.
-root@vm-docker:~# docker stop $POSTGRES
-03ff6b272a4f5d432e165778602c02c4df8484f849ed1180e897e96f50ff5370
-```
+  ```shell
+  postgres@03ff6b272a4f:~$ /etc/init.d/postgresql stop
+  Stopping PostgreSQL 9.3 database server                                                                                         [ OK ]
+  postgres@03ff6b272a4f:~$ exit
+  logout
+  root@03ff6b272a4f:~# exit
+  logout
+  Connection to 172.17.0.6 closed.
+  root@vm-docker:~# docker stop $POSTGRES
+  03ff6b272a4f5d432e165778602c02c4df8484f849ed1180e897e96f50ff5370
+  ```
 
   5. イメージとして保存
-```shell
-root@vm-docker:~# sudo docker commit $POSTGRES yokoih/postgres_base
-ac4042982d7cbb3400f096b5aabc1cceab5dc6d935199a4acda776789ee7fd0b
-root@vm-docker:~# docker images
-REPOSITORY             TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
-yokoih/postgres_base   latest              ac4042982d7c        15 seconds ago      394.5 MB
-ubuntu                 latest              53bf7a53e890        7 days ago          221.3 MB
-yokoih/sshd            latest              0481b802b6c9        10 days ago         267.5 MB
-```
+  ```shell
+  root@vm-docker:~# sudo docker commit $POSTGRES yokoih/postgres_base
+  ac4042982d7cbb3400f096b5aabc1cceab5dc6d935199a4acda776789ee7fd0b
+  root@vm-docker:~# docker images
+  REPOSITORY             TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+  yokoih/postgres_base   latest              ac4042982d7c        15 seconds ago      394.5 MB
+  ubuntu                 latest              53bf7a53e890        7 days ago          221.3 MB
+  yokoih/sshd            latest              0481b802b6c9        10 days ago         267.5 MB
+  ```
 2. イメージを元に2台のPostgreSQLコンテナを起動
-```shell
-root@vm-docker:~# PG1=$(docker run -P -d --name primary yokoih/postgres_base)
-root@vm-docker:~# PG2=$(docker run -P -d --name secondary yokoih/postgres_base)
-root@vm-docker:~# echo $PG1
-1e6c2c87dacea40815fd9fed9b6a24b5f1d09f048412381bbdda3924293e4240
-root@vm-docker:~# echo $PG2
-2b116e57c0c1f3be13f54d245db1a016e468975f1e6d0bfe7801055fb49e075f
-root@vm-docker:~# docker ps
-CONTAINER ID        IMAGE                         COMMAND               CREATED             STATUS              PORTS                   NAMES
-2b116e57c0c1        yokoih/postgres_base:latest   "/usr/sbin/sshd -D"   22 seconds ago      Up 21 seconds       0.0.0.0:49158->22/tcp   secondary
-1e6c2c87dace        yokoih/postgres_base:latest   "/usr/sbin/sshd -D"   33 seconds ago      Up 31 seconds       0.0.0.0:49157->22/tcp   primary
-```
+  ```shell
+  root@vm-docker:~# PG1=$(docker run -P -d --name primary yokoih/postgres_base)
+  root@vm-docker:~# PG2=$(docker run -P -d --name secondary yokoih/postgres_base)
+  root@vm-docker:~# echo $PG1
+  1e6c2c87dacea40815fd9fed9b6a24b5f1d09f048412381bbdda3924293e4240
+  root@vm-docker:~# echo $PG2
+  2b116e57c0c1f3be13f54d245db1a016e468975f1e6d0bfe7801055fb49e075f
+  root@vm-docker:~# docker ps
+  CONTAINER ID        IMAGE                         COMMAND               CREATED             STATUS              PORTS                   NAMES
+  2b116e57c0c1        yokoih/postgres_base:latest   "/usr/sbin/sshd -D"   22 seconds ago      Up 21 seconds       0.0.0.0:49158->22/tcp   secondary
+  1e6c2c87dace        yokoih/postgres_base:latest   "/usr/sbin/sshd -D"   33 seconds ago      Up 31 seconds       0.0.0.0:49157->22/tcp   primary
+  ```
 
 3. コンテナのNICにIPアドレスを付与する
 
