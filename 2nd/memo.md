@@ -3,7 +3,7 @@
 ## ストリーミングレプリケーションをdockerで試す
 
 ### 構成
-![Image of structure](https://github.com/yokoi-h/lt-docker/blob/master/2nd/postgres-replication-image.png)
+![Image of structure](https://github.com/yokoi-h/lt-docker/blob/master/images/postgres-replication-image.png)
 
 * VMの外側から任意のIPアドレスで接続する
 * レプリケーション用のセグメントを作成する
