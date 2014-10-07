@@ -26,13 +26,15 @@
 
 3. コンテナのNICにIPアドレスを付与する
 
-  1. eth1に192.168.11.101, 192.168.11.102を付与する
+  1. 事前のVM側のeth0をプロミスキャスモードにしておく
 
-  2. eth2に10.10.0.1, 10.10.0.2を付与する
+  2. eth1に192.168.11.101, 192.168.11.102を付与する
 
-  3. host OSからpingできるか確認
+  3. eth2に10.10.0.1, 10.10.0.2を付与する
 
-  4. コンテナ間でpingが飛ぶか確認
+  4. host OSからpingできるか確認
+
+  5. コンテナ間でpingが飛ぶか確認
 
 4. レプリケーションの設定
 
@@ -152,22 +154,22 @@ gpg:               imported: 1  (RSA: 1)
 
 3. コンテナのNICにIPアドレスを付与する
 
-  0. 事前のVM側のeth0をプロミスキャスモードにしておく
+  1. 事前にVM側のeth0をプロミスキャスモードにしておく
   ```shell
   root@vm-docker:~# ifconfig eth0 promisc
   ```
-  1. eth1に192.168.11.101, 192.168.11.102を付与する
+  2. eth1に192.168.11.101, 192.168.11.102を付与する
   ```shell
   root@vm-docker:~# pipework eth0 -i eth1 $PG1 192.168.11.101/24
   root@vm-docker:~# pipework eth0 -i eth1 $PG2 192.168.11.102/24
   ```
-  2. eth2に10.10.0.1, 10.10.0.2を付与する
+  3. eth2に10.10.0.1, 10.10.0.2を付与する
   ```shell
   root@vm-docker:~# pipework br1 -i eth2 $PG1 10.10.0.1/24
   root@vm-docker:~# pipework br1 -i eth2 $PG2 10.10.0.2/24
   root@vm-docker:~# brctl show
   ```
-  3. host OSからpingできるか確認
+  4. host OSからpingできるか確認
   ```shell
   $ ping -c 1 192.168.11.101
   PING 192.168.11.101 (192.168.11.101): 56 data bytes
@@ -178,8 +180,7 @@ gpg:               imported: 1  (RSA: 1)
   64 bytes from 192.168.11.102: icmp_seq=0 ttl=64 time=0.588 ms
   ...
   ```
-
-  4. コンテナ間でpingが飛ぶか確認
+  5. コンテナ間でpingが飛ぶか確認
   ```shell
   root@vm-docker:~# docker inspect --format '{{ .NetworkSettings.IPAddress }}' $PG1
   172.17.0.7
