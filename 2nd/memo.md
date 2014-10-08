@@ -1,6 +1,7 @@
 # 続Docker
 
-## ストリーミングレプリケーションをdockerで試す
+
+##  1. ストリーミングレプリケーションをdockerで試す
 
 ### 構成
 ![Image of structure](https://github.com/yokoi-h/lt-docker/blob/master/images/postgres-replication-image.png)
@@ -257,7 +258,7 @@ gpg:               imported: 1  (RSA: 1)
   postgres    265     40  0 00:35 pts/0    00:00:00 grep postgres
   ```
 
-## 動作確認
+### 動作確認
 primary側でテーブルを作成する。
 ```SQL
 postgres@1e6c2c87dace:~$ psql docker
@@ -289,3 +290,116 @@ docker=# \d
  public | test_table | table | postgres
 (8 rows)
 ```
+
+
+
+##  2. 母艦側のディレクトリをコンテナ内のPostgreSQLから使う
+
+1. 母艦側でディレクトリを作成
+```bash
+root@vm-docker:~# mkdir -p /volumes/postgres/9.3/conf
+root@vm-docker:~# mkdir -p /volumes/postgres/9.3/data
+root@vm-docker:~# ls -al /volumes/postgres/9.3
+total 16
+drwxr-xr-x 4 root root 4096 Oct  1 19:33 .
+drwxr-xr-x 3 root root 4096 Oct  1 19:31 ..
+drwxr-xr-x 2 root root 4096 Oct  1 19:33 conf
+drwxr-xr-x 2 root root 4096 Oct  1 19:33 data
+```
+
+2. Postgresコンテナを起動する
+```bash
+root@vm-docker:~# PG3=$(docker run -P -d --name volume_test -v /volumes/postgres/9.3/data:/var/lib/postgresql/9.3/ -v /volumes/postgres/9.3/conf:/etc/postgresql/9.3/ yokoih/postgres_base)
+root@vm-docker:~# docker ps
+CONTAINER ID        IMAGE                         COMMAND               CREATED             STATUS              PORTS                   NAMES
+8ac3b4364619        yokoih/postgres_base:latest   "/usr/sbin/sshd -D"   7 seconds ago       Up 7 seconds        0.0.0.0:49160->22/tcp   volume_test
+2b116e57c0c1        yokoih/postgres_base:latest   "/usr/sbin/sshd -D"   11 hours ago        Up 11 hours         0.0.0.0:49158->22/tcp   secondary
+1e6c2c87dace        yokoih/postgres_base:latest   "/usr/sbin/sshd -D"   11 hours ago        Up 11 hours         0.0.0.0:49157->22/tcp   primary
+0a83dcd9b851        yokoih/sshd:latest            "/usr/sbin/sshd -D"   27 hours ago        Up 27 hours         0.0.0.0:49154->22/tcp   postgres94
+a78818203ab1        yokoih/sshd:latest            "/usr/sbin/sshd -D"   6 days ago          Up 6 days           0.0.0.0:49153->22/tcp   sshd
+root@vm-docker:~#
+```
+
+3. ログインしてパーミッションとかもろもろ設定
+```bash
+root@vm-docker:~# ssh 172.17.0.10
+root@8ac3b4364619:~# chown -R postgres:postgres /etc/postgresql/9.3
+root@8ac3b4364619:~# chown postgres:postgres /var/lib/postgresql/9.3/
+root@8ac3b4364619:~#
+```
+
+4. データベースクラスタを作成
+```bash
+root@8ac3b4364619:~# su - postgres
+postgres@8ac3b4364619:~$ pg_createcluster 9.3 main --start
+Creating new cluster 9.3/main ...
+  config /etc/postgresql/9.3/main
+  data   /var/lib/postgresql/9.3/main
+  locale C
+  port   5432
+```
+
+5. ポスグレを起動
+```bash
+root@64aea04b815c:~# su - postgres
+postgres@64aea04b815c:~$ /etc/init.d/postgresql start
+ * Starting PostgreSQL 9.3 database server                                                                                                                                                                   [ OK ]
+postgres@64aea04b815c:~$ psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker';"
+CREATE ROLE
+postgres@64aea04b815c:~$ createdb -O docker docker
+postgres@64aea04b815c:~$ psql docker
+```
+
+  ```SQL
+  postgres@8ac3b4364619:~$ psql docker
+  psql (9.3.5)
+  Type "help" for help.
+
+  docker=# create table test_table ( id int, name text);
+  CREATE TABLE
+  docker=# insert into test_table values ( 1, 'docker');
+  INSERT 0 1
+  docker=# select * from test_table;
+   id |  name
+  ----+--------
+    1 | docker
+  (1 row)
+
+  docker=#
+  ```
+
+6. VM側でもディレクトリが見えていますね
+  ```bash
+  root@vm-docker:/volumes/postgres/9.3/data/main# ls -al
+  total 72
+  drwx------ 15 landscape mlocate 4096 Oct  1 19:40 .
+  drwxr-xr-x  3 landscape mlocate 4096 Oct  1 19:40 ..
+  drwx------  6 landscape mlocate 4096 Oct  1 19:41 base
+  drwx------  2 landscape mlocate 4096 Oct  1 19:42 global
+  drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_clog
+  drwx------  4 landscape mlocate 4096 Oct  1 19:40 pg_multixact
+  drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_notify
+  drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_serial
+  drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_snapshots
+  drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_stat
+  drwx------  2 landscape mlocate 4096 Oct  1 19:44 pg_stat_tmp
+  drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_subtrans
+  drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_tblspc
+  drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_twophase
+  -rw-------  1 landscape mlocate    4 Oct  1 19:40 PG_VERSION
+  drwx------  3 landscape mlocate 4096 Oct  1 19:40 pg_xlog
+  -rw-------  1 landscape mlocate  133 Oct  1 19:40 postmaster.opts
+  -rw-------  1 landscape mlocate   99 Oct  1 19:40 postmaster.pid
+  ```
+  ```bash
+  root@vm-docker:/volumes/postgres/9.3/conf/main# ls -al
+  total 56
+  drwxr-xr-x 2 landscape mlocate  4096 Oct  1 19:40 .
+  drwxr-xr-x 3 landscape mlocate  4096 Oct  1 19:40 ..
+  -rw-r--r-- 1 landscape mlocate   315 Oct  1 19:40 environment
+  -rw-r--r-- 1 landscape mlocate   143 Oct  1 19:40 pg_ctl.conf
+  -rw-r----- 1 landscape mlocate  4649 Oct  1 19:40 pg_hba.conf
+  -rw-r----- 1 landscape mlocate  1636 Oct  1 19:40 pg_ident.conf
+  -rw-r--r-- 1 landscape mlocate 20595 Oct  1 19:40 postgresql.conf
+  -rw-r--r-- 1 landscape mlocate   378 Oct  1 19:40 start.conf
+  ```
