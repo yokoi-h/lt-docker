@@ -12,35 +12,35 @@
 
 1. PostgreSQL9.3入りイメージを作成する
 
-  1. sshdがインストールされたコンテナを用意し起動しておく
+  　1. sshdがインストールされたコンテナを用意し起動しておく
 
-  2. dockerが付与したIPアドレスを調べsshでログインする
+  　2. dockerが付与したIPアドレスを調べsshでログインする
 
-  3. PostgreSQL9.3をインストール
+  　3. PostgreSQL9.3をインストール
 
-  4. いったんコンテナを停止
+  　4. いったんコンテナを停止
 
-  5. イメージとして保存
+  　5. イメージとして保存
 
-2. イメージを元に2台のPostgreSQLコンテナを起動
+2. イメージを使って2台のPostgreSQLコンテナを起動
 
 3. コンテナのNICにIPアドレスを付与する
 
-  1. 事前のVM側のeth0をプロミスキャスモードにしておく
+  　1. 事前のVM側のeth0をプロミスキャスモードにしておく
 
-  2. eth1に192.168.11.101, 192.168.11.102を付与する
+  　2. eth1に192.168.11.101, 192.168.11.102を付与する
 
-  3. eth2に10.10.0.1, 10.10.0.2を付与する
+  　3. eth2に10.10.0.1, 10.10.0.2を付与する
 
-  4. host OSからpingできるか確認
+  　4. host OSからpingできるか確認
 
-  5. コンテナ間でpingが飛ぶか確認
+  　5. コンテナ間でpingが飛ぶか確認
 
 4. レプリケーションの設定
 
-1. プライマリの設定
+　　1. プライマリの設定
 
-2. セカンダリの設定
+　　2. セカンダリの設定
 
 ### ツール
 
@@ -136,7 +136,7 @@ gpg:               imported: 1  (RSA: 1)
   ubuntu                 latest              53bf7a53e890        7 days ago          221.3 MB
   yokoih/sshd            latest              0481b802b6c9        10 days ago         267.5 MB
   ```
-2. イメージを元に2台のPostgreSQLコンテナを起動
+2. イメージを使って2台のPostgreSQLコンテナを起動
   ```shell
   root@vm-docker:~# PG1=$(docker run -P -d --name primary yokoih/postgres_base)
   root@vm-docker:~# PG2=$(docker run -P -d --name secondary yokoih/postgres_base)
