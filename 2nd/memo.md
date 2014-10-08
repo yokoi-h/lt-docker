@@ -65,7 +65,6 @@ root@vm-docker:~# install -m 0755 pipework /usr/bin/
   root@vm-docker:~# echo $POSTGRES
   03ff6b272a4f5d432e165778602c02c4df8484f849ed1180e897e96f50ff5370
   ```
-
   2. dockerが付与したIPアドレスを調べsshでログインする
   ```shell
   root@vm-docker:~# docker inspect --format '{{ .NetworkSettings.IPAddress }}' $POSTGRES
@@ -78,7 +77,6 @@ Warning: Permanently added '172.17.0.6' (ECDSA) to the list of known hosts.
 root@172.17.0.6's password: [docker]
 root@03ff6b272a4f:~#
   ```
-
   3. PostgreSQL9.3をインストール
   ```shell
   root@03ff6b272a4f:~# apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
@@ -99,7 +97,7 @@ gpg:               imported: 1  (RSA: 1)
   Processing triggers for libc-bin (2.19-0ubuntu6.3) ...
   ```
   ```shell
-  root@03ff6b272a4f:~# su - postgre
+  root@03ff6b272a4f:~# su - postgres
   postgres@03ff6b272a4f:~$ /etc/init.d/postgresql start
   Starting PostgreSQL 9.3 database server                                                                                         [ OK ]
   postgres@03ff6b272a4f:~$ psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker';"
