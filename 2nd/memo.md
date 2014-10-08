@@ -59,13 +59,13 @@ root@vm-docker:~# install -m 0755 pipework /usr/bin/
 
 1. PostgreSQL9.3入りイメージを作成する
 
-  1. sshdがインストールされたコンテナを用意し起動しておく
+  　1. sshdがインストールされたコンテナを用意し起動しておく
   ```shell
   root@vm-docker:~# POSTGRES=$(docker run -P -d --name postgres yokoih/sshd)
   root@vm-docker:~# echo $POSTGRES
   03ff6b272a4f5d432e165778602c02c4df8484f849ed1180e897e96f50ff5370
   ```
-  2. dockerが付与したIPアドレスを調べsshでログインする
+  　2. dockerが付与したIPアドレスを調べsshでログインする
   ```shell
   root@vm-docker:~# docker inspect --format '{{ .NetworkSettings.IPAddress }}' $POSTGRES
   172.17.0.6
@@ -77,7 +77,7 @@ Warning: Permanently added '172.17.0.6' (ECDSA) to the list of known hosts.
 root@172.17.0.6's password: [docker]
 root@03ff6b272a4f:~#
   ```
-  3. PostgreSQL9.3をインストール
+  　3. PostgreSQL9.3をインストール
   ```shell
   root@03ff6b272a4f:~# apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
 Executing: gpg --ignore-time-conflict --no-options --no-default-keyring --homedir /tmp/tmp.zsqiZx7f01 --no-auto-check-trustdb --trust-model always --keyring /etc/apt/trusted.gpg --primary-keyring /etc/apt/trusted.gpg --keyserver keyserver.ubuntu.com --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
@@ -113,7 +113,7 @@ gpg:               imported: 1  (RSA: 1)
   docker=#
   ```
 
-  4. いったん停止(停止しても更新したファイルの内容は残っています)
+  　4. いったん停止(停止しても更新したファイルの内容は残っています)
   ```shell
   postgres@03ff6b272a4f:~$ /etc/init.d/postgresql stop
   Stopping PostgreSQL 9.3 database server                                                                                         [ OK ]
@@ -126,7 +126,7 @@ gpg:               imported: 1  (RSA: 1)
   03ff6b272a4f5d432e165778602c02c4df8484f849ed1180e897e96f50ff5370
   ```
 
-  5. イメージとして保存
+  　5. イメージとして保存
   ```shell
   root@vm-docker:~# sudo docker commit $POSTGRES yokoih/postgres_base
   ac4042982d7cbb3400f096b5aabc1cceab5dc6d935199a4acda776789ee7fd0b
@@ -152,22 +152,22 @@ gpg:               imported: 1  (RSA: 1)
 
 3. コンテナのNICにIPアドレスを付与する
 
-  1. 事前にVM側のeth0をプロミスキャスモードにしておく
+  　1. 事前にVM側のeth0をプロミスキャスモードにしておく
   ```shell
   root@vm-docker:~# ifconfig eth0 promisc
   ```
-  2. eth1に192.168.11.101, 192.168.11.102を付与する
+  　2. eth1に192.168.11.101, 192.168.11.102を付与する
   ```shell
   root@vm-docker:~# pipework eth0 -i eth1 $PG1 192.168.11.101/24
   root@vm-docker:~# pipework eth0 -i eth1 $PG2 192.168.11.102/24
   ```
-  3. eth2に10.10.0.1, 10.10.0.2を付与する
+  　3. eth2に10.10.0.1, 10.10.0.2を付与する
   ```shell
   root@vm-docker:~# pipework br1 -i eth2 $PG1 10.10.0.1/24
   root@vm-docker:~# pipework br1 -i eth2 $PG2 10.10.0.2/24
   root@vm-docker:~# brctl show
   ```
-  4. host OSからpingできるか確認
+  　4. host OSからpingできるか確認
   ```shell
   $ ping -c 1 192.168.11.101
   PING 192.168.11.101 (192.168.11.101): 56 data bytes
@@ -178,7 +178,7 @@ gpg:               imported: 1  (RSA: 1)
   64 bytes from 192.168.11.102: icmp_seq=0 ttl=64 time=0.588 ms
   ...
   ```
-  5. コンテナ間でpingが飛ぶか確認
+  　5. コンテナ間でpingが飛ぶか確認
   ```shell
   root@vm-docker:~# docker inspect --format '{{ .NetworkSettings.IPAddress }}' $PG1
   172.17.0.7
@@ -199,7 +199,7 @@ gpg:               imported: 1  (RSA: 1)
 
 4. レプリケーションの設定
 
- 1. プライマリの設定
+ 　1. プライマリの設定
   ```shell
   root@1e6c2c87dace:~# cd /etc/postgresql/9.3/main/
   root@1e6c2c87dace:/etc/postgresql/9.3/main# vi postgresql.conf
@@ -228,7 +228,7 @@ gpg:               imported: 1  (RSA: 1)
   postgres    138     53  0 00:35 pts/0    00:00:00 ps -ef
   postgres    139     53  0 00:35 pts/0    00:00:00 grep postgres
   ```
- 2. セカンダリの設定
+ 　2. セカンダリの設定
   ```shell
   root@2b116e57c0c1:~# sudo su - postgres
   postgres@2b116e57c0c1:~$ /etc/init.d/postgresql start
