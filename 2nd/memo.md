@@ -43,18 +43,23 @@
 
 　　2. セカンダリの設定
 
-### ツール
+### コンテナにIPアドレスを付与するツール
 
-* コンテナに任意のIPを付与するためのツールとしてpipeworkというツールがあります。
+* 任意のIPを付与するためのツールとしてpipeworkというツールがあります。
 * あらかじめこれをdockerコンテナの母艦となるVMにインストールしておきます。
 
-```shell
-root@vm-docker:~# apt-get install arping
-root@vm-docker:~# apt-get install bridge-utils
-root@vm-docker:~# git clone https://github.com/jpetazzo/pipework.git
-root@vm-docker:~# cd pipwork
-root@vm-docker:~# install -m 0755 pipework /usr/bin/
-```
+  ```shell
+  root@vm-docker:~# apt-get install arping
+  root@vm-docker:~# apt-get install bridge-utils
+  root@vm-docker:~# git clone https://github.com/jpetazzo/pipework.git
+  root@vm-docker:~# cd pipwork
+  root@vm-docker:~# install -m 0755 pipework /usr/bin/
+  ```
+
+* 使い方
+  ```
+  pipework <ethデバイス or linux-bridge> -i <コンテナ内のNIC> コンテナID IPアドレス
+  ```
 
 ### コマンドを粛々と実行
 
