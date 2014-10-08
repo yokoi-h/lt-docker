@@ -295,7 +295,7 @@ docker=# \d
 
 ##  2. 母艦側のディレクトリをコンテナ内のPostgreSQLから使う
 
-1. 母艦側でディレクトリを作成
+　1. 母艦側でディレクトリを作成
 ```bash
 root@vm-docker:~# mkdir -p /volumes/postgres/9.3/conf
 root@vm-docker:~# mkdir -p /volumes/postgres/9.3/data
@@ -307,7 +307,7 @@ drwxr-xr-x 2 root root 4096 Oct  1 19:33 conf
 drwxr-xr-x 2 root root 4096 Oct  1 19:33 data
 ```
 
-2. Postgresコンテナを起動する
+　2. Postgresコンテナを起動する
 ```bash
 root@vm-docker:~# PG3=$(docker run -P -d --name volume_test -v /volumes/postgres/9.3/data:/var/lib/postgresql/9.3/ -v /volumes/postgres/9.3/conf:/etc/postgresql/9.3/ yokoih/postgres_base)
 root@vm-docker:~# docker ps
@@ -320,7 +320,7 @@ a78818203ab1        yokoih/sshd:latest            "/usr/sbin/sshd -D"   6 days a
 root@vm-docker:~#
 ```
 
-3. ログインしてパーミッションとかもろもろ設定
+　3. ログインしてパーミッションとかもろもろ設定
 ```bash
 root@vm-docker:~# ssh 172.17.0.10
 root@8ac3b4364619:~# chown -R postgres:postgres /etc/postgresql/9.3
@@ -328,7 +328,7 @@ root@8ac3b4364619:~# chown postgres:postgres /var/lib/postgresql/9.3/
 root@8ac3b4364619:~#
 ```
 
-4. データベースクラスタを作成
+　4. データベースクラスタを作成
 ```bash
 root@8ac3b4364619:~# su - postgres
 postgres@8ac3b4364619:~$ pg_createcluster 9.3 main --start
@@ -339,7 +339,7 @@ Creating new cluster 9.3/main ...
   port   5432
 ```
 
-5. ポスグレを起動
+　5. ポスグレを起動
 ```bash
 root@64aea04b815c:~# su - postgres
 postgres@64aea04b815c:~$ /etc/init.d/postgresql start
@@ -368,38 +368,38 @@ postgres@64aea04b815c:~$ psql docker
   docker=#
   ```
 
-6. VM側でもディレクトリが見えていますね
-  ```bash
-  root@vm-docker:/volumes/postgres/9.3/data/main# ls -al
-  total 72
-  drwx------ 15 landscape mlocate 4096 Oct  1 19:40 .
-  drwxr-xr-x  3 landscape mlocate 4096 Oct  1 19:40 ..
-  drwx------  6 landscape mlocate 4096 Oct  1 19:41 base
-  drwx------  2 landscape mlocate 4096 Oct  1 19:42 global
-  drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_clog
-  drwx------  4 landscape mlocate 4096 Oct  1 19:40 pg_multixact
-  drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_notify
-  drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_serial
-  drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_snapshots
-  drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_stat
-  drwx------  2 landscape mlocate 4096 Oct  1 19:44 pg_stat_tmp
-  drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_subtrans
-  drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_tblspc
-  drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_twophase
-  -rw-------  1 landscape mlocate    4 Oct  1 19:40 PG_VERSION
-  drwx------  3 landscape mlocate 4096 Oct  1 19:40 pg_xlog
-  -rw-------  1 landscape mlocate  133 Oct  1 19:40 postmaster.opts
-  -rw-------  1 landscape mlocate   99 Oct  1 19:40 postmaster.pid
-  ```
-  ```bash
-  root@vm-docker:/volumes/postgres/9.3/conf/main# ls -al
-  total 56
-  drwxr-xr-x 2 landscape mlocate  4096 Oct  1 19:40 .
-  drwxr-xr-x 3 landscape mlocate  4096 Oct  1 19:40 ..
-  -rw-r--r-- 1 landscape mlocate   315 Oct  1 19:40 environment
-  -rw-r--r-- 1 landscape mlocate   143 Oct  1 19:40 pg_ctl.conf
-  -rw-r----- 1 landscape mlocate  4649 Oct  1 19:40 pg_hba.conf
-  -rw-r----- 1 landscape mlocate  1636 Oct  1 19:40 pg_ident.conf
-  -rw-r--r-- 1 landscape mlocate 20595 Oct  1 19:40 postgresql.conf
-  -rw-r--r-- 1 landscape mlocate   378 Oct  1 19:40 start.conf
-  ```
+　6. VM側でもディレクトリが見えていますね
+```bash
+root@vm-docker:/volumes/postgres/9.3/data/main# ls -al
+total 72
+drwx------ 15 landscape mlocate 4096 Oct  1 19:40 .
+drwxr-xr-x  3 landscape mlocate 4096 Oct  1 19:40 ..
+drwx------  6 landscape mlocate 4096 Oct  1 19:41 base
+drwx------  2 landscape mlocate 4096 Oct  1 19:42 global
+drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_clog
+drwx------  4 landscape mlocate 4096 Oct  1 19:40 pg_multixact
+drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_notify
+drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_serial
+drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_snapshots
+drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_stat
+drwx------  2 landscape mlocate 4096 Oct  1 19:44 pg_stat_tmp
+drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_subtrans
+drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_tblspc
+drwx------  2 landscape mlocate 4096 Oct  1 19:40 pg_twophase
+-rw-------  1 landscape mlocate    4 Oct  1 19:40 PG_VERSION
+drwx------  3 landscape mlocate 4096 Oct  1 19:40 pg_xlog
+-rw-------  1 landscape mlocate  133 Oct  1 19:40 postmaster.opts
+-rw-------  1 landscape mlocate   99 Oct  1 19:40 postmaster.pid
+```
+```bash
+root@vm-docker:/volumes/postgres/9.3/conf/main# ls -al
+total 56
+drwxr-xr-x 2 landscape mlocate  4096 Oct  1 19:40 .
+drwxr-xr-x 3 landscape mlocate  4096 Oct  1 19:40 ..
+-rw-r--r-- 1 landscape mlocate   315 Oct  1 19:40 environment
+-rw-r--r-- 1 landscape mlocate   143 Oct  1 19:40 pg_ctl.conf
+-rw-r----- 1 landscape mlocate  4649 Oct  1 19:40 pg_hba.conf
+-rw-r----- 1 landscape mlocate  1636 Oct  1 19:40 pg_ident.conf
+-rw-r--r-- 1 landscape mlocate 20595 Oct  1 19:40 postgresql.conf
+-rw-r--r-- 1 landscape mlocate   378 Oct  1 19:40 start.conf
+```
