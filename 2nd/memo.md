@@ -341,13 +341,13 @@ Creating new cluster 9.3/main ...
 
 　5. ポスグレを起動
 ```bash
-root@64aea04b815c:~# su - postgres
-postgres@64aea04b815c:~$ /etc/init.d/postgresql start
+root@8ac3b4364619:~# su - postgres
+postgres@8ac3b4364619:~$ /etc/init.d/postgresql start
  * Starting PostgreSQL 9.3 database server                                                                                                                                                                   [ OK ]
-postgres@64aea04b815c:~$ psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker';"
+postgres@8ac3b4364619:~$ psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker';"
 CREATE ROLE
-postgres@64aea04b815c:~$ createdb -O docker docker
-postgres@64aea04b815c:~$ psql docker
+postgres@8ac3b4364619:~$ createdb -O docker docker
+postgres@8ac3b4364619:~$ psql docker
 ```
 
   ```SQL
