@@ -296,6 +296,8 @@ docker=# \d
 (8 rows)
 ```
 
+***
+
 ### 異なるVM間でレプリケーションするパターン
 ![Image of structure](https://github.com/yokoi-h/lt-docker/blob/master/2nd/postgres-replication-image-2.png)
 
@@ -316,19 +318,15 @@ docker=# \d
 
   　5. イメージとして保存
 
-2. 母艦となるVM間をトンネルで結ぶ
-
-  　1. 各VMにトンネルデバイスを作成
-
-  　2. linux-bridgeに接続
-
-
 3. イメージを使って2台のPostgreSQLコンテナを起動
 
-  1. VM1でmaster、VM2でslave用のコンテナを起動する
+  　1. VM1でmaster、VM2でslave用のコンテナを起動する
 
+4. (new)母艦となるVM間をトンネルで結ぶ
 
-4. コンテナのNICにIPアドレスを付与する
+  　1. 各VMでトンネルデバイスを作成
+
+5. コンテナのNICにIPアドレスを付与する
 
   　1. 事前のVM側のeth0をプロミスキャスモードにしておく
 
@@ -336,21 +334,30 @@ docker=# \d
 
   　3. masterのeth2に10.10.0.1, slaveのeth1に10.10.0.2を付与する
 
-  　4. host OSからpingできるか確認
+  　4. (new)各VMのトンネルデバイスをlinux−bridgeにアタッチする
 
   　5. コンテナ間でpingが飛ぶか確認
 
-5. レプリケーションの設定
+6. レプリケーションの設定
 
 　　1. プライマリの設定
 
 　　2. セカンダリの設定
 
 
-### コマンドを粛々と実行
+### コマンドを粛々と実行(step 2から)
 
-2. 母艦となるVM間をトンネルで結ぶ
+　2. イメージを使って2台のPostgreSQLコンテナを起動
+  ```bash
+  root@ubuntu-docker-1:~# PG1=$(docker run -P -d --name primary yokoih/postgres_base)
+  ```
+  ```bash
+  root@ubuntu-docker-2:~# PG2=$(docker run -P -d --name secondary yokoih/postgres_base)
+  ```
 
+　3. (new)母艦となるVM間をトンネルで結ぶ
+
+　　1. 各VMにトンネルデバイスを作成
 ```bash
 root@ubuntu-docker-1:~# ip link add tun1 type gretap remote 192.168.11.129 local 192.168.11.128 ttl 255
 ```
@@ -358,24 +365,33 @@ root@ubuntu-docker-1:~# ip link add tun1 type gretap remote 192.168.11.129 local
 root@ubuntu-docker-2:~# ip link add tun2 type gretap remote 192.168.11.128 local 192.168.11.129 ttl 255
 ```
 
-　2. eth1に192.168.11.101, 192.168.11.102を付与する
-```shell
+　4. コンテナのNICにIPアドレスを付与する
+
+　　1. 事前にVM側のeth0をプロミスキャスモードにしておく
+```bash
+root@ubuntu-docker-1:~# ifconfig eth0 promisc
+```
+```bash
+root@ubuntu-docker-2:~# ifconfig eth0 promisc
+```
+　　2. masterのeth1に192.168.11.101, slaveのeth1に192.168.11.102を付与する
+```bash
 root@ubuntu-docker-1:~# pipework eth0 -i eth1 $PG1 192.168.11.101/24
 ```
-```shell
+```bash
 root@ubuntu-docker-2:~# pipework eth0 -i eth1 $PG2 192.168.11.102/24
 ```
-　3. eth2に10.10.0.1, 10.10.0.2を付与する
-```shell
+
+　　3. masterのeth2に10.10.0.1, slaveのeth1に10.10.0.2を付与する
+```bash
 root@ubuntu-docker-1:~# pipework br1 -i eth2 $PG1 10.10.0.1/24
+root@ubuntu-docker-2:~# brctl show
 ```
-```shell
+```bash
 root@ubuntu-docker-2:~# pipework br1 -i eth2 $PG2 10.10.0.2/24
-root@vm-docker:~# brctl show
+root@ubuntu-docker-2:~# brctl show
 ```
-
-　3. linux-bridgeにトンネルデバイスを追加
-
+　　4. (new)各VMのトンネルデバイスをlinux−bridgeにアタッチする
 ```bash
 root@ubuntu-docker-1:~# brctl addif tun1 br1
 root@ubuntu-docker-1:~# ip link set up tun1
@@ -386,7 +402,7 @@ root@ubuntu-docker-2:~# brctl addif tun2 br1
 root@ubuntu-docker-2:~# ip link set up tun2
 ```
 
-　4. pingできるかな
+　　5. pingできるかな
 ```bash
 root@8a230581f8b0:~# ping 10.10.0.2 -c 2
 PING 10.10.0.2 (10.10.0.2) 56(84) bytes of data.
@@ -401,8 +417,7 @@ PING 10.10.0.1 (10.10.0.1) 56(84) bytes of data.
 64 bytes from 10.10.0.1: icmp_seq=2 ttl=64 time=0.838 ms
 ```
 
-
-
+---
 
 ##  2. 母艦側のディレクトリをコンテナ内のPostgreSQLから使う
 
