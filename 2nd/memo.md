@@ -297,7 +297,7 @@ docker=# \d
 ```
 
 ### 異なるVM間でレプリケーションするパターン
-![Image of structure](https://github.com/yokoi-h/lt-docker/blob/master/images/postgres-replication-image−2.png)
+![Image of structure](https://github.com/yokoi-h/lt-docker/blob/master/images/postgres-replication-image-2.png)
 
 * 各VM内のlinux−bridgeをトンネルで結ぶ
 * 参考：http://blog.sequenceiq.com/blog/2014/08/12/docker-networking/
