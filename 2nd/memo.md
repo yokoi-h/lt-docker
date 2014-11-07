@@ -6,8 +6,8 @@
 ### 同一VM上でレプリケーションするパターン
 ![Image of structure](https://github.com/yokoi-h/lt-docker/blob/master/images/postgres-replication-image.png)
 
-* VMの外側から任意のIPアドレスで接続できるようにしつつ
-* レプリケーション用には内部のネットワークを使う
+* VMの外側から任意のIPアドレス(192.168.11.101, 192.168.11.102)で接続できるようにしつつ
+* レプリケーションはVM内部のネットワーク(10.10.0.0)を使うようにする
 
 ### 実現ステップ
 
