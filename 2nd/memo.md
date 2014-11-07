@@ -208,7 +208,6 @@ gpg:               imported: 1  (RSA: 1)
  　1. プライマリの設定
   ```shell
   root@1e6c2c87dace:~# cd /etc/postgresql/9.3/main/
-  root@1e6c2c87dace:/etc/postgresql/9.3/main# chown postgres:postgres postgresql.conf
   root@1e6c2c87dace:/etc/postgresql/9.3/main# vi postgresql.conf
   wal_level = 	hot_standby			# minimal, archive, or hot_standby
   archive_mode = on		# allows archiving to be done
@@ -217,7 +216,7 @@ gpg:               imported: 1  (RSA: 1)
   synchronous_standby_names = 'hoge'	# standby servers that provide sync rep
   root@1e6c2c87dace:/etc/postgresql/9.3/main# vi pg_hba.conf
   host replication postgres 10.10.0.2/32 trust
-  root@1e6c2c87dace:~# sudo su - postgres
+  root@1e6c2c87dace:~# su - postgres
   postgres@1e6c2c87dace:~$ /etc/init.d/postgresql start
   postgres@1e6c2c87dace:/etc/postgresql/9.3/main$ ps -ef | grep postgres
   root         51     23  0 00:22 pts/0    00:00:00 sudo su - postgres
@@ -236,7 +235,7 @@ gpg:               imported: 1  (RSA: 1)
   ```
  　2. セカンダリの設定
   ```shell
-  root@2b116e57c0c1:~# sudo su - postgres
+  root@2b116e57c0c1:~# su - postgres
   postgres@2b116e57c0c1:~$ /etc/init.d/postgresql start
   postgres@2b116e57c0c1:~$ export PGDATA=/var/lib/postgresql/9.3/standby
   postgres@2b116e57c0c1:~$ pg_basebackup -R -D ${PGDATA} -h 10.10.0.1 -p 5432
@@ -245,7 +244,7 @@ gpg:               imported: 1  (RSA: 1)
   data_directory = '/var/lib/postgresql/9.3/standby'
   hot_standby = on
   wal_level = hot_standby
-  root@1e6c2c87dace:~# vi /var/lib/postgresql/9.3/standby/recovery.conf
+  postgres@2b116e57c0c1:~# vi /var/lib/postgresql/9.3/standby/recovery.conf
   standby_mode = 'on'
   primary_conninfo = 'user=postgres host=10.10.0.1 port=5432 sslmode=prefer sslcompression=1 krbsrvname=postgres application_name=hoge'
   # primary_conninfoの最後にapplication_name=hogeを追加
@@ -285,15 +284,8 @@ docker=# \d
            List of relations
  Schema |    Name    | Type  |  Owner
 --------+------------+-------+----------
- public | test       | table | docker
- public | test10     | table | docker
- public | test2      | table | postgres
- public | test3      | table | postgres
- public | test4      | table | postgres
- public | test5      | table | postgres
- public | test6      | table | postgres
  public | test_table | table | postgres
-(8 rows)
+(1 row)
 ```
 
 ***
