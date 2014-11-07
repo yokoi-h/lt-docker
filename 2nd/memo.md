@@ -208,8 +208,8 @@ gpg:               imported: 1  (RSA: 1)
  　1. プライマリの設定
   ```shell
   root@1e6c2c87dace:~# cd /etc/postgresql/9.3/main/
-  root@1e6c2c87dace:/etc/postgresql/9.3/main# vi postgresql.conf
   root@1e6c2c87dace:/etc/postgresql/9.3/main# chown postgres:postgres postgresql.conf
+  root@1e6c2c87dace:/etc/postgresql/9.3/main# vi postgresql.conf
   wal_level = 	hot_standby			# minimal, archive, or hot_standby
   archive_mode = on		# allows archiving to be done
   archive_command = 'cp %p /tmp/%f'		# command to use to archive a logfile segment
