@@ -52,7 +52,7 @@
   root@vm-docker:~# apt-get install arping
   root@vm-docker:~# apt-get install bridge-utils
   root@vm-docker:~# git clone https://github.com/jpetazzo/pipework.git
-  root@vm-docker:~# cd pipwork
+  root@vm-docker:~# cd pipework
   root@vm-docker:~# install -m 0755 pipework /usr/bin/
   ```
 
